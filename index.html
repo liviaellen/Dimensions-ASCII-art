@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Dimensions - ART exploration by Ellen. A copy of us living inside this screen as data, number, a mind extraction.">
+  <title>Dimensions - Live Cell Visualization</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <div id="app">
+    <div class="container">
+      <h1 class="title">Dimensions</h1>
+      <div class="spreadsheet-wrapper">
+        <div class="column-headers" id="column-headers"></div>
+        <div class="row-container">
+          <div class="row-headers" id="row-headers"></div>
+          <div class="video-container">
+            <video id="video" autoplay playsinline></video>
+            <canvas id="segmentation-canvas"></canvas>
+            <canvas id="grid-canvas"></canvas>
+            <canvas id="cell-canvas"></canvas>
+            <canvas id="text-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="controls">
+        <div class="control-panel">
+          <div class="slider-group">
+            <label for="bg-color-picker">
+              <span>Background Color</span>
+              <span class="slider-value" id="bg-color-value">#FFFFFF</span>
+            </label>
+            <input type="color" id="bg-color-picker" value="#FFFFFF" class="color-picker">
+          </div>
+
+          <div class="slider-group">
+            <label for="speed-slider">
+              <span>Wave Speed</span>
+              <span class="slider-value" id="speed-value">0.5x</span>
+            </label>
+            <input type="range" id="speed-slider" min="0" max="100" value="15" class="slider">
+          </div>
+
+          <div class="slider-group">
+            <label for="size-slider">
+              <span>Cell Size</span>
+              <span class="slider-value" id="size-value">20px</span>
+            </label>
+            <input type="range" id="size-slider" min="15" max="40" value="20" class="slider">
+          </div>
+
+          <div class="slider-group">
+            <label for="color-slider">
+              <span>Text Color Spectrum</span>
+              <span class="slider-value" id="color-value">Rainbow</span>
+            </label>
+            <input type="range" id="color-slider" min="0" max="360" value="0" class="slider">
+          </div>
+        </div>
+
+        <div class="input-group">
+          <input type="text" id="text-input" class="text-input"
+            placeholder="Type text (each cell = 5 chars: your text + ./\*)..." maxlength="50" /><button
+            id="clear-text-btn" class="btn-secondary">Clear</button>
+        </div>
+        <button id="start-btn" class="btn-primary">Start Camera</button>
+        <div class="status" id="status">Click to begin</div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/main.js"></script>
+</body>
+
+</html>
