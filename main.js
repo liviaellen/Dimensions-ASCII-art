@@ -8,6 +8,7 @@ let WAVE_SPEED = 0.015; // Reduced wave intensity
 const COLOR_CHANGE_SPEED = 0.0015;
 let BG_COLOR = '#FFFFFF'; // Background color - default white for minimalist look
 let SPECTRUM_OFFSET = 0; // 0 = rainbow, 1-360 = spectrum starting at hue
+let WAVE_PATTERN = 'radial'; // Wave pattern: radial, horizontal, vertical, sinusoidal, random
 
 // Color palettes for vibrant, smooth transitions - Excel-inspired
 const COLOR_PALETTES = [
@@ -31,11 +32,13 @@ class NumberTwinApp {
     this.cellCanvas = document.getElementById('cell-canvas');
     this.textCanvas = document.getElementById('text-canvas');
     this.startBtn = document.getElementById('start-btn');
+    this.fullscreenBtn = document.getElementById('fullscreen-btn');
     this.status = document.getElementById('status');
     this.textInput = document.getElementById('text-input');
     this.clearTextBtn = document.getElementById('clear-text-btn');
     this.columnHeaders = document.getElementById('column-headers');
     this.rowHeaders = document.getElementById('row-headers');
+    this.videoContainer = document.querySelector('.video-container');
 
     // Sliders
     // Sliders and color picker
@@ -102,6 +105,28 @@ class NumberTwinApp {
         this.colorValue.textContent = SPECTRUM_OFFSET + '°';
       }
     });
+
+    // Wave pattern buttons
+    const waveButtons = document.querySelectorAll('.wave-btn');
+    waveButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        waveButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        WAVE_PATTERN = btn.dataset.pattern;
+      });
+    });
+
+    // Fullscreen button
+    this.fullscreenBtn.addEventListener('click', () => this.toggleFullscreen());
+
+    // Listen for fullscreen changes to update button text
+    document.addEventListener('fullscreenchange', () => {
+      if (document.fullscreenElement) {
+        this.fullscreenBtn.textContent = 'Exit Fullscreen';
+      } else {
+        this.fullscreenBtn.textContent = 'Fullscreen';
+      }
+    });
   }
 
   async start() {
@@ -132,6 +157,9 @@ class NumberTwinApp {
 
       this.updateStatus('Camera active - Segmentation running', 'active');
       this.isRunning = true;
+
+      // Enable fullscreen button
+      this.fullscreenBtn.disabled = false;
 
       // Start animation loop
       this.animate();
@@ -291,6 +319,51 @@ class NumberTwinApp {
     requestAnimationFrame(() => this.animate());
   }
 
+  calculateWave(col, row, cols, rows) {
+    let wave, wave2;
+
+    switch (WAVE_PATTERN) {
+      case 'horizontal':
+        // Wave moves horizontally
+        wave = Math.sin(col * 0.3 - this.time * 2) * 0.3 + 0.5;
+        wave2 = Math.cos(col * 0.2 + this.time * 1.5) * 0.2 + 0.5;
+        break;
+
+      case 'vertical':
+        // Wave moves vertically
+        wave = Math.sin(row * 0.3 - this.time * 2) * 0.3 + 0.5;
+        wave2 = Math.cos(row * 0.2 + this.time * 1.5) * 0.2 + 0.5;
+        break;
+
+      case 'sinusoidal':
+        // Diagonal sinusoidal pattern
+        wave = Math.sin((col + row) * 0.2 - this.time * 2) * 0.3 + 0.5;
+        wave2 = Math.cos((col - row) * 0.15 + this.time * 1.5) * 0.2 + 0.5;
+        break;
+
+      case 'random':
+        // Pseudo-random pattern based on cell position
+        const seed = col * 12.9898 + row * 78.233;
+        const random = Math.sin(seed + this.time * 2) * 0.5 + 0.5;
+        wave = random * 0.6 + 0.2;
+        wave2 = Math.cos(seed * 1.5 + this.time * 1.5) * 0.2 + 0.5;
+        break;
+
+      case 'radial':
+      default:
+        // Radial wave from center (original)
+        const distance = Math.sqrt(
+          Math.pow(col - cols / 2, 2) +
+          Math.pow(row - rows / 2, 2)
+        );
+        wave = Math.sin(distance * 0.15 - this.time * 2) * 0.3 + 0.5;
+        wave2 = Math.cos(distance * 0.1 + this.time * 1.5) * 0.2 + 0.5;
+        break;
+    }
+
+    return { wave, wave2 };
+  }
+
   drawCells() {
     const ctx = this.cellCtx;
     const width = this.cellCanvas.width;
@@ -327,13 +400,8 @@ class NumberTwinApp {
         const isPersonPixel = this.segmentationMask.data[pixelIndex] > 128;
 
         if (isPersonPixel) {
-          // Reduced wave effect for subtlety
-          const distance = Math.sqrt(
-            Math.pow(col - cols / 2, 2) +
-            Math.pow(row - rows / 2, 2)
-          );
-          const wave = Math.sin(distance * 0.15 - this.time * 2) * 0.3 + 0.5; // Reduced intensity
-          const wave2 = Math.cos(distance * 0.1 + this.time * 1.5) * 0.2 + 0.5;
+          // Calculate wave based on selected pattern
+          const { wave, wave2 } = this.calculateWave(col, row, cols, rows);
 
           // Blend between color palettes
           const h = this.lerp(currentPalette.h, nextPalette.h, paletteBlend);
@@ -341,7 +409,7 @@ class NumberTwinApp {
           const l = this.lerp(currentPalette.l, nextPalette.l, paletteBlend);
 
           // Apply hue offset and subtle wave
-          const finalH = (h + HUE_OFFSET + wave * 15 - 7.5 + 360) % 360;
+          const finalH = (h + SPECTRUM_OFFSET + wave * 15 - 7.5 + 360) % 360;
           const finalL = Math.min(85, l + wave * 15 - 5);
           const finalS = Math.min(100, s + wave2 * 8);
 
@@ -541,6 +609,18 @@ class NumberTwinApp {
 
   lerp(a, b, t) {
     return a + (b - a) * t;
+  }
+
+  toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      // Enter fullscreen
+      this.videoContainer.requestFullscreen().catch(err => {
+        console.error('Error attempting to enable fullscreen:', err);
+      });
+    } else {
+      // Exit fullscreen
+      document.exitFullscreen();
+    }
   }
 
   updateStatus(message, type = '') {

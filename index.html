@@ -16,6 +16,10 @@
   <div id="app">
     <div class="container">
       <h1 class="title">Dimensions</h1>
+      <div class="attribution">
+        <p class="byline">by <a href="https://instagram.com/ellen_in_sf" target="_blank" rel="noopener noreferrer">Livia Ellen</a></p>
+        <p class="description">Self reconstruction with your identity—name—ASCII art</p>
+      </div>
       <div class="spreadsheet-wrapper">
         <div class="column-headers" id="column-headers"></div>
         <div class="row-container">
@@ -62,6 +66,19 @@
             </label>
             <input type="range" id="color-slider" min="0" max="360" value="0" class="slider">
           </div>
+
+          <div class="slider-group">
+            <label>
+              <span>Wave Pattern</span>
+            </label>
+            <div class="wave-pattern-options">
+              <button class="wave-btn active" data-pattern="radial">Radial</button>
+              <button class="wave-btn" data-pattern="horizontal">Horizontal</button>
+              <button class="wave-btn" data-pattern="vertical">Vertical</button>
+              <button class="wave-btn" data-pattern="sinusoidal">Sinusoidal</button>
+              <button class="wave-btn" data-pattern="random">Random</button>
+            </div>
+          </div>
         </div>
 
         <div class="input-group">
@@ -69,7 +86,10 @@
             placeholder="Type text (each cell = 5 chars: your text + ./\*)..." maxlength="50" /><button
             id="clear-text-btn" class="btn-secondary">Clear</button>
         </div>
-        <button id="start-btn" class="btn-primary">Start Camera</button>
+        <div class="button-group">
+          <button id="start-btn" class="btn-primary">Start Camera</button>
+          <button id="fullscreen-btn" class="btn-secondary" disabled>Fullscreen</button>
+        </div>
         <div class="status" id="status">Click to begin</div>
       </div>
     </div>
