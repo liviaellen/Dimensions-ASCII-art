@@ -128,10 +128,12 @@ class NumberTwinApp {
 
   async start() {
     try {
+      console.log('[DEBUG] Starting camera...');
       this.startBtn.disabled = true;
       this.updateStatus('Requesting camera access...', 'active');
 
       // Get camera stream
+      console.log('[DEBUG] Requesting camera permissions...');
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
           width: { ideal: 1280 },
@@ -139,18 +141,24 @@ class NumberTwinApp {
           facingMode: 'user'
         }
       });
+      console.log('[DEBUG] Camera stream obtained');
 
       this.video.srcObject = stream;
       await this.video.play();
+      console.log('[DEBUG] Video playing');
 
       // Setup canvases
       this.setupCanvases();
+      console.log('[DEBUG] Canvases setup complete');
 
       // Create spreadsheet headers
       this.createSpreadsheetHeaders();
+      console.log('[DEBUG] Headers created');
 
       // Initialize segmentation
+      console.log('[DEBUG] Initializing MediaPipe segmentation...');
       await this.initSegmentation();
+      console.log('[DEBUG] Segmentation initialized');
 
       this.updateStatus('Camera active - Segmentation running', 'active');
       this.isRunning = true;
@@ -160,6 +168,7 @@ class NumberTwinApp {
 
       // Start animation loop
       this.animate();
+      console.log('[DEBUG] Animation loop started');
 
     } catch (error) {
       console.error('Error starting camera:', error);
@@ -261,22 +270,34 @@ class NumberTwinApp {
 
   async initSegmentation() {
     try {
+      console.log('[DEBUG] Starting segmentation initialization...');
       this.updateStatus('Loading segmentation model...', 'active');
 
+      console.log('[DEBUG] Creating SelfieSegmentation instance...');
       this.selfieSegmentation = new SelfieSegmentation({
         locateFile: (file) => {
-          return `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`;
+          const url = `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`;
+          console.log('[DEBUG] Loading MediaPipe file:', url);
+          return url;
         }
       });
+      console.log('[DEBUG] SelfieSegmentation instance created');
 
+      console.log('[DEBUG] Setting segmentation options...');
       this.selfieSegmentation.setOptions({
         modelSelection: 1,
         selfieMode: false, // No mirror effect
       });
+      console.log('[DEBUG] Options set');
 
-      this.selfieSegmentation.onResults((results) => this.onSegmentationResults(results));
+      console.log('[DEBUG] Setting up results callback...');
+      this.selfieSegmentation.onResults((results) => {
+        console.log('[DEBUG] Segmentation results received');
+        this.onSegmentationResults(results);
+      });
 
       // Start camera processing
+      console.log('[DEBUG] Creating Camera instance...');
       const camera = new Camera(this.video, {
         onFrame: async () => {
           if (this.isRunning) {
@@ -286,10 +307,14 @@ class NumberTwinApp {
         width: 1280,
         height: 720
       });
+      console.log('[DEBUG] Camera instance created');
 
+      console.log('[DEBUG] Starting camera processing...');
       camera.start();
+      console.log('[DEBUG] Camera processing started');
     } catch (error) {
-      console.error('Error initializing segmentation:', error);
+      console.error('[ERROR] Segmentation initialization failed:', error);
+      console.error('[ERROR] Error stack:', error.stack);
       this.updateStatus('Failed to load segmentation model: ' + error.message, 'error');
       this.isRunning = false;
       this.startBtn.disabled = false;
