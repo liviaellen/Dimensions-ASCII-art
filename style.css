@@ -42,24 +42,13 @@ body::before {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image:
-    repeating-linear-gradient(0deg, rgba(0, 255, 0, 0.1) 0px, transparent 1px, transparent 2px, rgba(0, 255, 0, 0.1) 3px),
-    repeating-linear-gradient(90deg, rgba(0, 255, 0, 0.1) 0px, transparent 1px, transparent 2px, rgba(0, 255, 0, 0.1) 3px),
-    repeating-linear-gradient(45deg, rgba(0, 255, 255, 0.05) 0px, transparent 1px, transparent 10px, rgba(0, 255, 255, 0.05) 11px),
-    repeating-linear-gradient(-45deg, rgba(255, 0, 255, 0.05) 0px, transparent 1px, transparent 10px, rgba(255, 0, 255, 0.05) 11px);
-  background-size: 20px 20px, 20px 20px, 40px 40px, 40px 40px;
-  animation: bgShift 20s linear infinite;
+  background-image: url('/backgrounds/bg3.gif');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   pointer-events: none;
 }
 
-@keyframes bgShift {
-  0% {
-    background-position: 0 0, 0 0, 0 0, 0 0;
-  }
-  100% {
-    background-position: 20px 20px, 20px 20px, 40px 40px, -40px -40px;
-  }
-}
 
 #app {
   width: 100%;
@@ -589,6 +578,7 @@ body::before {
   border-color: #00ff00;
   box-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
 }
+
 
 .input-group {
   display: flex;

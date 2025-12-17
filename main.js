@@ -62,6 +62,12 @@ class NumberTwinApp {
     this.sizeValue = document.getElementById('size-value');
     this.colorValue = document.getElementById('color-value');
 
+    // Background controls
+    this.colorPickerGroup = document.getElementById('color-picker-group');
+    this.gifSelectorGroup = document.getElementById('gif-selector-group');
+    this.currentBgMode = 'grid';
+    this.currentGif = null;
+
     this.segmentationCtx = this.segmentationCanvas.getContext('2d', { willReadFrequently: true });
     this.gridCtx = this.gridCanvas.getContext('2d');
     this.cellCtx = this.cellCanvas.getContext('2d');
@@ -99,6 +105,10 @@ class NumberTwinApp {
     this.bgColorPicker.addEventListener('input', (e) => {
       BG_COLOR = e.target.value;
       this.bgColorValue.textContent = BG_COLOR;
+      // Update body background if in color mode
+      if (this.currentBgMode === 'color') {
+        document.body.style.backgroundColor = BG_COLOR;
+      }
     });
 
     this.sizeSlider.addEventListener('input', (e) => {
@@ -123,6 +133,28 @@ class NumberTwinApp {
         waveButtons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         WAVE_PATTERN = btn.dataset.pattern;
+      });
+    });
+
+    // Background style buttons
+    const bgButtons = document.querySelectorAll('.bg-btn');
+    bgButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        bgButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        this.currentBgMode = btn.dataset.bg;
+        this.switchBackgroundMode(btn.dataset.bg);
+      });
+    });
+
+    // GIF selection buttons
+    const gifButtons = document.querySelectorAll('.gif-btn');
+    gifButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        gifButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        this.currentGif = btn.dataset.gif;
+        this.setGifBackground(btn.dataset.gif);
       });
     });
 
@@ -858,6 +890,44 @@ class NumberTwinApp {
       console.error('Error downloading screenshot:', error);
       this.updateStatus('Download failed: ' + error.message, 'error');
     }
+  }
+
+  switchBackgroundMode(mode) {
+    // Remove all background classes
+    document.body.classList.remove('bg-grid', 'bg-color', 'bg-gif');
+
+    // Show/hide appropriate controls
+    if (mode === 'color') {
+      this.colorPickerGroup.style.display = 'flex';
+      this.gifSelectorGroup.style.display = 'none';
+      document.body.classList.add('bg-color');
+      document.body.style.backgroundColor = this.bgColorPicker.value;
+    } else if (mode === 'gif') {
+      this.colorPickerGroup.style.display = 'none';
+      this.gifSelectorGroup.style.display = 'flex';
+      document.body.classList.add('bg-gif');
+      // If a GIF is already selected, apply it
+      if (this.currentGif) {
+        this.setGifBackground(this.currentGif);
+      }
+    } else {
+      // Grid mode (default)
+      this.colorPickerGroup.style.display = 'none';
+      this.gifSelectorGroup.style.display = 'none';
+      document.body.classList.add('bg-grid');
+      document.body.style.backgroundColor = '';
+      document.body.querySelector('body::before')?.style.removeProperty('background-image');
+    }
+  }
+
+  setGifBackground(gifFile) {
+    // Use relative path - Vite will handle it correctly
+    const gifUrl = `/backgrounds/${gifFile}`;
+    const bodyBefore = document.querySelector('body::before');
+
+    // We need to set the background on the body::before pseudo-element
+    // Since we can't directly access pseudo-elements, we'll update via CSS variable
+    document.documentElement.style.setProperty('--bg-gif-url', `url('${gifUrl}')`);
   }
 }
 
