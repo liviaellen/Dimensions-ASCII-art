@@ -700,31 +700,41 @@ class NumberTwinApp {
   drawWatermark() {
     const ctx = this.cellCtx;
     const text = 'DIMENSIONS BY LIVIA ELLEN';
-    const padding = 10;
-    const fontSize = 12;
+    const padding = 12;
+    const fontSize = 10;
 
     ctx.font = `${fontSize}px 'Press Start 2P', monospace`;
-    ctx.textAlign = 'right';
-    ctx.textBaseline = 'bottom';
-
     const textWidth = ctx.measureText(text).width;
-    const x = this.cellCanvas.width - padding;
-    const y = this.cellCanvas.height - padding;
 
-    // Draw semi-transparent background
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-    ctx.fillRect(x - textWidth - padding, y - fontSize - padding, textWidth + padding * 2, fontSize + padding * 2);
+    // Position box in bottom-right corner
+    const boxWidth = textWidth + padding * 2;
+    const boxHeight = fontSize + padding * 2;
+    const x = this.cellCanvas.width - boxWidth - 10;
+    const y = this.cellCanvas.height - boxHeight - 10;
 
-    // Draw border
+    // Draw semi-transparent background with gradient
+    const gradient = ctx.createLinearGradient(x, y, x, y + boxHeight);
+    gradient.addColorStop(0, 'rgba(0, 17, 0, 0.9)');
+    gradient.addColorStop(1, 'rgba(0, 0, 0, 0.9)');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(x, y, boxWidth, boxHeight);
+
+    // Draw double border for depth
     ctx.strokeStyle = '#00ff00';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(x - textWidth - padding, y - fontSize - padding, textWidth + padding * 2, fontSize + padding * 2);
+    ctx.lineWidth = 2;
+    ctx.strokeRect(x, y, boxWidth, boxHeight);
 
-    // Draw text
+    ctx.strokeStyle = 'rgba(0, 255, 0, 0.5)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(x + 2, y + 2, boxWidth - 4, boxHeight - 4);
+
+    // Draw centered text with glow
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
     ctx.fillStyle = '#00ff00';
     ctx.shadowColor = '#00ff00';
-    ctx.shadowBlur = 5;
-    ctx.fillText(text, x - padding, y - padding);
+    ctx.shadowBlur = 8;
+    ctx.fillText(text, x + boxWidth / 2, y + boxHeight / 2);
     ctx.shadowBlur = 0;
   }
 
