@@ -8,9 +8,9 @@
 
 ## Concept
 
-Dimensions explores the transformation of human presence into pure data—a digital consciousness rendered through ASCII characters and cellular grids. As you stand before the camera, your physical form dissolves into numbers, symbols, and colored cells, creating a living representation of yourself as information.
+Dimensions explores the transformation of human presence into pure data, a digital consciousness rendered through ASCII characters and cellular grids. As you stand before the camera, your physical form dissolves into numbers, symbols, and colored cells, creating a living representation of yourself as information.
 
-This is not merely a mirror; it's a translation. Your face, expressions, and movements become procedurally generated patterns—a mind extraction where flesh becomes data, presence becomes code, and identity exists as a spectrum of colors flowing across a grid.
+This is not merely a mirror; it's a translation. Your face, expressions, and movements become procedurally generated patterns, a mind extraction where flesh becomes data, presence becomes code, and identity exists as a spectrum of colors flowing across a grid.
 
 We are copies living inside screens, reduced to pixels and characters, yet somehow still recognizably *us*.
 
@@ -70,7 +70,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Artist Statement
 
-In this digital age, we exist simultaneously in physical and virtual spaces. Dimensions makes visible the translation between these realms—showing how cameras, algorithms, and screens reduce our three-dimensional presence into two-dimensional data.
+In this digital age, we exist simultaneously in physical and virtual spaces. Dimensions makes visible the translation between these realms, showing how cameras, algorithms, and screens reduce our three-dimensional presence into two-dimensional data.
 
 The ASCII characters are not arbitrary; they map to the brightness of your face, creating a procedurally generated portrait that shifts and flows. The rainbow spectrum represents the full range of digital color space, slowly rotating to remind us that this representation is alive, changing, never static.
 
