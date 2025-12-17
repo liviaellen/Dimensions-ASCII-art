@@ -43,11 +43,9 @@ class NumberTwinApp {
     // Sliders
     // Sliders and color picker
     this.bgColorPicker = document.getElementById('bg-color-picker');
-    this.speedSlider = document.getElementById('speed-slider');
     this.sizeSlider = document.getElementById('size-slider');
     this.colorSlider = document.getElementById('color-slider');
     this.bgColorValue = document.getElementById('bg-color-value');
-    this.speedValue = document.getElementById('speed-value');
     this.sizeValue = document.getElementById('size-value');
     this.colorValue = document.getElementById('color-value');
 
@@ -83,12 +81,6 @@ class NumberTwinApp {
     this.bgColorPicker.addEventListener('input', (e) => {
       BG_COLOR = e.target.value;
       this.bgColorValue.textContent = BG_COLOR;
-    });
-
-    this.speedSlider.addEventListener('input', (e) => {
-      const value = parseInt(e.target.value);
-      WAVE_SPEED = value / 1000; // 0 to 0.1
-      this.speedValue.textContent = (value / 30).toFixed(1) + 'x';
     });
 
     this.sizeSlider.addEventListener('input', (e) => {
