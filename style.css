@@ -272,25 +272,18 @@ body::before {
 }
 
 .loading-text {
-  font-size: 2rem;
+  font-size: 1.5rem;
   text-shadow: 0 0 10px #00ff00;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  animation: textGlow 2s ease-in-out infinite;
 }
 
-.dots {
-  display: inline-block;
-  animation: dotPulse 1.5s infinite;
-}
-
-@keyframes dotPulse {
-  0%, 20% {
-    opacity: 0;
+@keyframes textGlow {
+  0%, 100% {
+    text-shadow: 0 0 10px #00ff00;
   }
-  40% {
-    opacity: 1;
-  }
-  60%, 100% {
-    opacity: 0;
+  50% {
+    text-shadow: 0 0 20px #00ff00, 0 0 30px #00ffff;
   }
 }
 
