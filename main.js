@@ -1,11 +1,14 @@
 import './style.css';
-import { SelfieSegmentation } from '@mediapipe/selfie_segmentation';
-import { Camera } from '@mediapipe/camera_utils';
 
 // Prevent scroll restoration
 if ('scrollRestoration' in history) {
   history.scrollRestoration = 'manual';
 }
+
+// MediaPipe will be loaded from CDN via script tags
+// Access via window object
+const SelfieSegmentation = window.SelfieSegmentation;
+const Camera = window.Camera;
 
 // Configuration - now controllable via sliders
 let CELL_SIZE = 20; // Larger for 5-character cells
