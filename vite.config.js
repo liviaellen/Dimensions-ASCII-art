@@ -1,4 +1,5 @@
 export default {
+  base: '/Dimensions-ASCII-art/',
   server: {
     host: true,
     port: 3000,
