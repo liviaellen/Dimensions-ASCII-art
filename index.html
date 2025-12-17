@@ -38,6 +38,14 @@
               <p class="loading-text">Ready to dissolve into data?</p>
               <p class="instruction-text">↓ Click Start Camera Below ↓</p>
             </div>
+            <div class="video-controls-overlay">
+              <button id="record-btn" class="btn-icon" disabled title="Record Video">
+                <span class="icon-label">REC</span>
+              </button>
+              <button id="download-btn" class="btn-icon" disabled title="Save Photo">
+                <span class="icon-label">SAVE</span>
+              </button>
+            </div>
             <video id="video" autoplay playsinline></video>
             <canvas id="segmentation-canvas"></canvas>
             <canvas id="grid-canvas"></canvas>
@@ -95,12 +103,6 @@
         <div class="button-group">
           <button id="start-btn" class="btn-primary">Start Camera</button>
           <button id="fullscreen-btn" class="btn-secondary" disabled>Fullscreen</button>
-          <button id="record-btn" class="btn-icon" disabled title="Record Video">
-            <span class="icon-label">REC</span>
-          </button>
-          <button id="download-btn" class="btn-icon" disabled title="Save Photo">
-            <span class="icon-label">SAVE</span>
-          </button>
         </div>
         <div class="recording-timer" id="recording-timer" style="display: none;">
           <span class="timer-dot">⏺</span>
