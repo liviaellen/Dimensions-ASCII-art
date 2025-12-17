@@ -41,12 +41,15 @@ class NumberTwinApp {
     this.textCanvas = document.getElementById('text-canvas');
     this.startBtn = document.getElementById('start-btn');
     this.fullscreenBtn = document.getElementById('fullscreen-btn');
+    this.recordBtn = document.getElementById('record-btn');
+    this.downloadBtn = document.getElementById('download-btn');
     this.status = document.getElementById('status');
     this.textInput = document.getElementById('text-input');
     this.clearTextBtn = document.getElementById('clear-text-btn');
     this.columnHeaders = document.getElementById('column-headers');
     this.rowHeaders = document.getElementById('row-headers');
     this.videoContainer = document.querySelector('.video-container');
+    this.loadingMessage = document.querySelector('.loading-message');
 
     // Sliders
     // Sliders and color picker
@@ -69,6 +72,9 @@ class NumberTwinApp {
     this.currentPaletteIndex = 0;
     this.userText = '';
     this.needsHeaderUpdate = false;
+    this.mediaRecorder = null;
+    this.recordedChunks = [];
+    this.isRecording = false;
 
     this.setupEventListeners();
   }
@@ -119,6 +125,12 @@ class NumberTwinApp {
     // Fullscreen button
     this.fullscreenBtn.addEventListener('click', () => this.toggleFullscreen());
 
+    // Record button
+    this.recordBtn.addEventListener('click', () => this.toggleRecording());
+
+    // Download button
+    this.downloadBtn.addEventListener('click', () => this.downloadScreenshot());
+
     // Listen for fullscreen changes to update button text
     document.addEventListener('fullscreenchange', () => {
       if (document.fullscreenElement) {
@@ -166,8 +178,13 @@ class NumberTwinApp {
       this.updateStatus('Camera active - Segmentation running', 'active');
       this.isRunning = true;
 
-      // Enable fullscreen button
+      // Hide loading message
+      this.loadingMessage.classList.add('hidden');
+
+      // Enable buttons
       this.fullscreenBtn.disabled = false;
+      this.recordBtn.disabled = false;
+      this.downloadBtn.disabled = false;
 
       // Start animation loop
       this.animate();
@@ -502,6 +519,9 @@ class NumberTwinApp {
         }
       }
     }
+
+    // Draw watermark
+    this.drawWatermark();
   }
 
   drawTextArt() {
@@ -632,6 +652,9 @@ class NumberTwinApp {
         }
       }
     }
+
+    // Draw watermark
+    this.drawWatermark();
   }
 
   roundRect(ctx, x, y, width, height, radius) {
@@ -668,6 +691,116 @@ class NumberTwinApp {
   updateStatus(message, type = '') {
     this.status.textContent = message;
     this.status.className = 'status' + (type ? ' ' + type : '');
+  }
+
+  drawWatermark() {
+    const ctx = this.cellCtx;
+    const text = 'DIMENSIONS BY LIVIA ELLEN';
+    const padding = 10;
+    const fontSize = 12;
+
+    ctx.font = `${fontSize}px 'Press Start 2P', monospace`;
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'bottom';
+
+    const textWidth = ctx.measureText(text).width;
+    const x = this.cellCanvas.width - padding;
+    const y = this.cellCanvas.height - padding;
+
+    // Draw semi-transparent background
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    ctx.fillRect(x - textWidth - padding, y - fontSize - padding, textWidth + padding * 2, fontSize + padding * 2);
+
+    // Draw border
+    ctx.strokeStyle = '#00ff00';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(x - textWidth - padding, y - fontSize - padding, textWidth + padding * 2, fontSize + padding * 2);
+
+    // Draw text
+    ctx.fillStyle = '#00ff00';
+    ctx.shadowColor = '#00ff00';
+    ctx.shadowBlur = 5;
+    ctx.fillText(text, x - padding, y - padding);
+    ctx.shadowBlur = 0;
+  }
+
+  toggleRecording() {
+    if (!this.isRecording) {
+      this.startRecording();
+    } else {
+      this.stopRecording();
+    }
+  }
+
+  startRecording() {
+    try {
+      const stream = this.cellCanvas.captureStream(30); // 30 FPS
+      this.mediaRecorder = new MediaRecorder(stream, {
+        mimeType: 'video/webm;codecs=vp9'
+      });
+
+      this.recordedChunks = [];
+
+      this.mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          this.recordedChunks.push(event.data);
+        }
+      };
+
+      this.mediaRecorder.onstop = () => {
+        const blob = new Blob(this.recordedChunks, { type: 'video/webm' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `dimensions-${Date.now()}.webm`;
+        a.click();
+        URL.revokeObjectURL(url);
+      };
+
+      this.mediaRecorder.start();
+      this.isRecording = true;
+      this.recordBtn.classList.add('recording');
+      this.updateStatus('Recording...', 'error');
+    } catch (error) {
+      console.error('Error starting recording:', error);
+      this.updateStatus('Recording failed: ' + error.message, 'error');
+    }
+  }
+
+  stopRecording() {
+    if (this.mediaRecorder && this.isRecording) {
+      this.mediaRecorder.stop();
+      this.isRecording = false;
+      this.recordBtn.classList.remove('recording');
+      this.updateStatus('Recording saved', 'active');
+    }
+  }
+
+  downloadScreenshot() {
+    try {
+      // Create a temporary canvas to combine all layers
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = this.cellCanvas.width;
+      tempCanvas.height = this.cellCanvas.height;
+      const tempCtx = tempCanvas.getContext('2d');
+
+      // Draw the cell canvas (which includes everything)
+      tempCtx.drawImage(this.cellCanvas, 0, 0);
+
+      // Convert to blob and download
+      tempCanvas.toBlob((blob) => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `dimensions-${Date.now()}.png`;
+        a.click();
+        URL.revokeObjectURL(url);
+        this.updateStatus('Screenshot saved', 'active');
+      });
+    } catch (error) {
+      console.error('Error downloading screenshot:', error);
+      this.updateStatus('Download failed: ' + error.message, 'error');
+    }
   }
 }
 

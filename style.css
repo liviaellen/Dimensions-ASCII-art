@@ -251,13 +251,67 @@ body::before {
 .video-container {
   position: relative;
   flex: 1;
-  border-radius: 0 0 8px 0;
+  border-radius: 0;
   overflow: hidden;
   background: #000;
   box-shadow:
     0 10px 40px rgba(0, 0, 0, 0.4),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    inset 0 0 0 1px rgba(0, 255, 0, 0.1);
   aspect-ratio: 16 / 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-message {
+  position: absolute;
+  z-index: 10;
+  text-align: center;
+  color: #00ff00;
+  font-family: 'VT323', monospace;
+}
+
+.loading-text {
+  font-size: 2rem;
+  text-shadow: 0 0 10px #00ff00;
+  margin-bottom: 1rem;
+}
+
+.dots {
+  display: inline-block;
+  animation: dotPulse 1.5s infinite;
+}
+
+@keyframes dotPulse {
+  0%, 20% {
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
+  60%, 100% {
+    opacity: 0;
+  }
+}
+
+.instruction-text {
+  font-size: 1.25rem;
+  color: #00ffff;
+  text-shadow: 0 0 5px #00ffff;
+  animation: instructionBlink 2s ease-in-out infinite;
+}
+
+@keyframes instructionBlink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.loading-message.hidden {
+  display: none;
 }
 
 #video {
@@ -475,11 +529,60 @@ body::before {
   align-items: stretch;
 }
 
+.input-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.75rem;
+  color: #00ffff;
+  text-shadow: 0 0 5px #00ffff;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
 .button-group {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 0.75rem;
   align-items: stretch;
+}
+
+.btn-icon {
+  font-size: 1.5rem;
+  padding: 0.75rem;
+  background: transparent;
+  border: 2px solid #00ff00;
+  border-radius: 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #00ff00;
+  text-shadow: 0 0 5px #00ff00;
+}
+
+.btn-icon:hover:not(:disabled) {
+  background: #00ff00;
+  color: #000000;
+  text-shadow: none;
+  box-shadow: 0 0 15px rgba(0, 255, 0, 0.8);
+}
+
+.btn-icon:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.btn-icon.recording {
+  background: #ff0000;
+  border-color: #ff0000;
+  color: #ffffff;
+  animation: recordPulse 1s ease-in-out infinite;
+}
+
+@keyframes recordPulse {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(255, 0, 0, 1);
+  }
 }
 
 .text-input {

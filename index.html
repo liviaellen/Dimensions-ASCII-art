@@ -30,6 +30,10 @@
         <div class="row-container">
           <div class="row-headers" id="row-headers"></div>
           <div class="video-container">
+            <div class="loading-message">
+              <p class="loading-text">Loading<span class="dots">...</span></p>
+              <p class="instruction-text">Click enable camera to start</p>
+            </div>
             <video id="video" autoplay playsinline></video>
             <canvas id="segmentation-canvas"></canvas>
             <canvas id="grid-canvas"></canvas>
@@ -79,13 +83,16 @@
         </div>
 
         <div class="input-group">
+          <label for="text-input" class="input-label">What characters made you?</label>
           <input type="text" id="text-input" class="text-input"
-            placeholder="Type text (each cell = 5 chars: your text + ./\*)..." maxlength="50" /><button
-            id="clear-text-btn" class="btn-secondary">Clear</button>
+            placeholder="Enter your characters..." maxlength="50" />
+          <button id="clear-text-btn" class="btn-secondary">Clear</button>
         </div>
         <div class="button-group">
           <button id="start-btn" class="btn-primary">Start Camera</button>
           <button id="fullscreen-btn" class="btn-secondary" disabled>Fullscreen</button>
+          <button id="record-btn" class="btn-icon" disabled title="Record">⏺</button>
+          <button id="download-btn" class="btn-icon" disabled title="Download Screenshot">⬇</button>
         </div>
         <div class="status" id="status">Click to begin</div>
       </div>
