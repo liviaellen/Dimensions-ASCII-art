@@ -2,6 +2,11 @@ import './style.css';
 import { SelfieSegmentation } from '@mediapipe/selfie_segmentation';
 import { Camera } from '@mediapipe/camera_utils';
 
+// Prevent scroll restoration
+if ('scrollRestoration' in history) {
+  history.scrollRestoration = 'manual';
+}
+
 // Configuration - now controllable via sliders
 let CELL_SIZE = 20; // Larger for 5-character cells
 let WAVE_SPEED = 0.015; // Reduced wave intensity
@@ -158,7 +163,17 @@ class NumberTwinApp {
 
     } catch (error) {
       console.error('Error starting camera:', error);
-      this.updateStatus('Camera access denied', 'error');
+      let errorMessage = 'Camera access denied';
+      if (error.name === 'NotAllowedError') {
+        errorMessage = 'Camera permission denied. Please allow camera access.';
+      } else if (error.name === 'NotFoundError') {
+        errorMessage = 'No camera found on this device.';
+      } else if (error.name === 'NotReadableError') {
+        errorMessage = 'Camera is already in use by another application.';
+      } else {
+        errorMessage = `Error: ${error.message}`;
+      }
+      this.updateStatus(errorMessage, 'error');
       this.startBtn.disabled = false;
     }
   }
@@ -245,33 +260,40 @@ class NumberTwinApp {
   }
 
   async initSegmentation() {
-    this.updateStatus('Loading segmentation model...', 'active');
+    try {
+      this.updateStatus('Loading segmentation model...', 'active');
 
-    this.selfieSegmentation = new SelfieSegmentation({
-      locateFile: (file) => {
-        return `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`;
-      }
-    });
-
-    this.selfieSegmentation.setOptions({
-      modelSelection: 1,
-      selfieMode: false, // No mirror effect
-    });
-
-    this.selfieSegmentation.onResults((results) => this.onSegmentationResults(results));
-
-    // Start camera processing
-    const camera = new Camera(this.video, {
-      onFrame: async () => {
-        if (this.isRunning) {
-          await this.selfieSegmentation.send({ image: this.video });
+      this.selfieSegmentation = new SelfieSegmentation({
+        locateFile: (file) => {
+          return `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`;
         }
-      },
-      width: 1280,
-      height: 720
-    });
+      });
 
-    camera.start();
+      this.selfieSegmentation.setOptions({
+        modelSelection: 1,
+        selfieMode: false, // No mirror effect
+      });
+
+      this.selfieSegmentation.onResults((results) => this.onSegmentationResults(results));
+
+      // Start camera processing
+      const camera = new Camera(this.video, {
+        onFrame: async () => {
+          if (this.isRunning) {
+            await this.selfieSegmentation.send({ image: this.video });
+          }
+        },
+        width: 1280,
+        height: 720
+      });
+
+      camera.start();
+    } catch (error) {
+      console.error('Error initializing segmentation:', error);
+      this.updateStatus('Failed to load segmentation model: ' + error.message, 'error');
+      this.isRunning = false;
+      this.startBtn.disabled = false;
+    }
   }
 
   onSegmentationResults(results) {
