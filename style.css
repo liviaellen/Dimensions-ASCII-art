@@ -560,20 +560,11 @@ body::before {
   letter-spacing: 0.05em;
 }
 
-.icon-symbol {
-  font-size: 1.25rem;
-  filter: drop-shadow(0 0 5px #00ff00);
-}
-
 .btn-icon:hover:not(:disabled) {
   background: #00ff00;
   color: #000000;
   text-shadow: none;
   box-shadow: 0 0 15px rgba(0, 255, 0, 0.8);
-}
-
-.btn-icon:hover:not(:disabled) .icon-symbol {
-  filter: drop-shadow(0 0 10px #000000);
 }
 
 .btn-icon:disabled {
@@ -586,10 +577,6 @@ body::before {
   border-color: #ff0000;
   color: #ffffff;
   animation: recordPulse 1s ease-in-out infinite;
-}
-
-.btn-icon.recording .icon-symbol {
-  filter: drop-shadow(0 0 5px #ffffff);
 }
 
 @keyframes recordPulse {
