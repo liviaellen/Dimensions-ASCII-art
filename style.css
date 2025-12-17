@@ -678,6 +678,36 @@ body::before {
   transform: none;
 }
 
+.recording-timer {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 1.25rem;
+  color: #ff0000;
+  text-align: center;
+  padding: 1rem 2rem;
+  background: rgba(0, 0, 0, 0.9);
+  border: 2px solid #ff0000;
+  border-radius: 0;
+  margin-bottom: 1rem;
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+}
+
+.timer-dot {
+  display: inline-block;
+  animation: recordingDotPulse 1s ease-in-out infinite;
+  margin-right: 0.5rem;
+}
+
+@keyframes recordingDotPulse {
+  0%, 100% {
+    opacity: 1;
+    text-shadow: 0 0 10px #ff0000;
+  }
+  50% {
+    opacity: 0.3;
+    text-shadow: 0 0 5px #ff0000;
+  }
+}
+
 .status {
   font-size: 1rem;
   color: var(--text-secondary);

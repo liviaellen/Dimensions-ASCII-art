@@ -50,6 +50,8 @@ class NumberTwinApp {
     this.rowHeaders = document.getElementById('row-headers');
     this.videoContainer = document.querySelector('.video-container');
     this.loadingMessage = document.querySelector('.loading-message');
+    this.recordingTimer = document.getElementById('recording-timer');
+    this.timerDisplay = document.getElementById('timer-display');
 
     // Sliders
     // Sliders and color picker
@@ -75,6 +77,8 @@ class NumberTwinApp {
     this.mediaRecorder = null;
     this.recordedChunks = [];
     this.isRecording = false;
+    this.recordingStartTime = 0;
+    this.timerInterval = null;
 
     this.setupEventListeners();
   }
@@ -735,32 +739,55 @@ class NumberTwinApp {
   startRecording() {
     try {
       const stream = this.cellCanvas.captureStream(30); // 30 FPS
-      this.mediaRecorder = new MediaRecorder(stream, {
-        mimeType: 'video/webm;codecs=vp9'
-      });
 
+      // Try different codec options for better compatibility
+      let options = { mimeType: 'video/webm;codecs=vp9' };
+      if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+        console.log('vp9 not supported, trying vp8');
+        options = { mimeType: 'video/webm;codecs=vp8' };
+      }
+      if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+        console.log('vp8 not supported, using default');
+        options = { mimeType: 'video/webm' };
+      }
+
+      this.mediaRecorder = new MediaRecorder(stream, options);
       this.recordedChunks = [];
 
       this.mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
           this.recordedChunks.push(event.data);
+          console.log('Recorded chunk:', event.data.size, 'bytes');
         }
       };
 
       this.mediaRecorder.onstop = () => {
+        console.log('Recording stopped, chunks:', this.recordedChunks.length);
         const blob = new Blob(this.recordedChunks, { type: 'video/webm' });
+        console.log('Final blob size:', blob.size, 'bytes');
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
         a.download = `dimensions-${Date.now()}.webm`;
+        document.body.appendChild(a);
         a.click();
+        document.body.removeChild(a);
         URL.revokeObjectURL(url);
       };
 
-      this.mediaRecorder.start();
+      // Request data every second for better chunking
+      this.mediaRecorder.start(1000);
       this.isRecording = true;
       this.recordBtn.classList.add('recording');
+
+      // Start timer
+      this.recordingStartTime = Date.now();
+      this.recordingTimer.style.display = 'block';
+      this.updateRecordingTimer();
+      this.timerInterval = setInterval(() => this.updateRecordingTimer(), 100);
+
       this.updateStatus('Recording...', 'error');
+      console.log('Recording started');
     } catch (error) {
       console.error('Error starting recording:', error);
       this.updateStatus('Recording failed: ' + error.message, 'error');
@@ -772,8 +799,26 @@ class NumberTwinApp {
       this.mediaRecorder.stop();
       this.isRecording = false;
       this.recordBtn.classList.remove('recording');
+
+      // Stop timer
+      if (this.timerInterval) {
+        clearInterval(this.timerInterval);
+        this.timerInterval = null;
+      }
+      this.recordingTimer.style.display = 'none';
+
       this.updateStatus('Recording saved', 'active');
+      console.log('Recording stopped');
     }
+  }
+
+  updateRecordingTimer() {
+    const elapsed = Date.now() - this.recordingStartTime;
+    const seconds = Math.floor(elapsed / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    this.timerDisplay.textContent =
+      `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
   }
 
   downloadScreenshot() {
