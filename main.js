@@ -67,7 +67,7 @@ class NumberTwinApp {
     this.colorPickerGroup = document.getElementById('color-picker-group');
     this.gifSelectorGroup = document.getElementById('gif-selector-group');
     this.cellBgMode = 'gif'; // 'color' or 'gif'
-    this.cellBgGifFile = 'bg3.gif'; // Default GIF
+    this.cellBgGifFile = 'bg5.gif'; // Default GIF
 
     this.segmentationCtx = this.segmentationCanvas.getContext('2d', { willReadFrequently: true });
     this.gridCtx = this.gridCanvas.getContext('2d');
@@ -156,6 +156,7 @@ class NumberTwinApp {
         gifButtons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         this.cellBgGifFile = btn.dataset.gif;
+        console.log('Loading GIF:', btn.dataset.gif);
         this.loadCellBgGif(btn.dataset.gif);
       });
     });
@@ -521,7 +522,8 @@ class NumberTwinApp {
     const nextPalette = COLOR_PALETTES[(this.currentPaletteIndex + 1) % COLOR_PALETTES.length];
     const paletteBlend = this.colorTime % 1;
 
-    // First pass: black out areas without person
+    // First pass: black out areas without person - SKIPPED to allow GIF bg to show
+    /*
     ctx.fillStyle = '#000000';
     for (let row = 0; row < rows; row++) {
       for (let col = 0; col < cols; col++) {
@@ -539,6 +541,7 @@ class NumberTwinApp {
         }
       }
     }
+    */
 
     // Second pass: draw colored cells only if NOT in GIF mode
     if (this.cellBgMode !== 'gif') {
@@ -615,9 +618,6 @@ class NumberTwinApp {
         }
       }
     }
-
-    // Draw watermark
-    this.drawWatermark();
   }
 
   drawTextArt() {
@@ -725,20 +725,22 @@ class NumberTwinApp {
           }
 
           // Draw cell background with spectrum colors
-          // The spectrum colors show on cells regardless of background mode
+          // Semi-transparent so GIF/color background shows through
+          const opacity = 0.6;
+
           if (SPECTRUM_OFFSET === 0) {
             // Rainbow mode - full spectrum across face with rotation speed based on WAVE_SPEED
             const timeOffset = (this.time * (WAVE_SPEED * 666)) % 360; // Speed controlled by slider
             const hue = ((col / cols) * 360 + timeOffset) % 360;
             const finalL = Math.min(70, 30 + contrastEnhanced * 40); // Darker for better text contrast
             const finalS = 85;
-            ctx.fillStyle = `hsl(${hue}, ${finalS}%, ${finalL}%)`;
+            ctx.fillStyle = `hsla(${hue}, ${finalS}%, ${finalL}%, ${opacity})`;
           } else {
             // Spectrum mode - use offset as starting hue
             const hue = (SPECTRUM_OFFSET + (col / cols) * 120) % 360; // 120° range
             const finalL = Math.min(70, 30 + contrastEnhanced * 40);
             const finalS = 85;
-            ctx.fillStyle = `hsl(${hue}, ${finalS}%, ${finalL}%)`;
+            ctx.fillStyle = `hsla(${hue}, ${finalS}%, ${finalL}%, ${opacity})`;
           }
 
           // Draw colored cell background
@@ -968,6 +970,13 @@ class NumberTwinApp {
 
   loadCellBgGif(gifFile) {
     this.cellBgGifImg.src = `/backgrounds/${gifFile}`;
+
+    // Also update the site main background
+    const mainBg = document.getElementById('main-bg');
+    if (mainBg) {
+      mainBg.style.backgroundImage = `url('/backgrounds/${gifFile}')`;
+    }
+
     this.cellBgGifImg.onload = () => {
       console.log('Cell background GIF loaded successfully:', gifFile);
       console.log('GIF dimensions:', this.cellBgGifImg.naturalWidth, 'x', this.cellBgGifImg.naturalHeight);

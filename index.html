@@ -13,10 +13,12 @@
 
   <!-- MediaPipe from CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/selfie_segmentation.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/selfie_segmentation.js"
+    crossorigin="anonymous"></script>
 </head>
 
 <body>
+  <div id="main-bg"></div>
   <div id="app">
     <div class="container">
       <div class="title-wrapper">
@@ -25,117 +27,118 @@
         <div class="pixel-decoration right"></div>
       </div>
       <div class="attribution">
-        <p class="byline">by <a href="https://instagram.com/ellen_in_sf" target="_blank" rel="noopener noreferrer">Livia Ellen</a></p>
+        <p class="byline">by <a href="https://instagram.com/ellen_in_sf" target="_blank" rel="noopener noreferrer">Livia
+            Ellen</a></p>
         <p class="description">Self reconstruction with your identity, name, ASCII art</p>
       </div>
       <div class="main-content">
         <div class="spreadsheet-wrapper">
-        <div class="column-headers" id="column-headers"></div>
-        <div class="row-container">
-          <div class="row-headers" id="row-headers"></div>
-          <div class="video-container">
-            <div class="loading-message">
-              <p class="loading-text">Ready to dissolve into data?</p>
-              <p class="instruction-text">↓ Click Start Camera Below ↓</p>
-            </div>
-            <div class="video-controls-overlay">
-              <button id="record-btn" class="btn-icon" disabled title="Record Video">
-                <span class="icon-label">REC</span>
-              </button>
-              <button id="download-btn" class="btn-icon" disabled title="Save Photo">
-                <span class="icon-label">SAVE</span>
-              </button>
-            </div>
-            <video id="video" autoplay playsinline></video>
-            <canvas id="segmentation-canvas"></canvas>
-            <canvas id="grid-canvas"></canvas>
-            <canvas id="cell-canvas"></canvas>
-            <canvas id="text-canvas"></canvas>
-            <img id="cell-bg-gif" style="display: none;" />
-          </div>
-        </div>
-      </div>
-      <div class="controls">
-        <div class="button-group">
-          <button id="start-btn" class="btn-primary">Start Camera</button>
-          <button id="fullscreen-btn" class="btn-secondary" disabled>Fullscreen</button>
-        </div>
-
-        <div class="control-panel">
-          <div class="slider-group">
-            <label>
-              <span>Cell Background</span>
-            </label>
-            <div class="background-options">
-              <button class="bg-btn" data-bg="color">Color</button>
-              <button class="bg-btn active" data-bg="gif">GIF</button>
-            </div>
-          </div>
-
-          <div class="slider-group" id="color-picker-group" style="display: none;">
-            <label for="bg-color-picker">
-              <span>Background Color</span>
-              <span class="slider-value" id="bg-color-value">#FFFFFF</span>
-            </label>
-            <input type="color" id="bg-color-picker" value="#FFFFFF" class="color-picker">
-          </div>
-
-          <div class="slider-group" id="gif-selector-group">
-            <label>
-              <span>Select GIF Background</span>
-            </label>
-            <div class="gif-options">
-              <button class="gif-btn" data-gif="bg1.gif">GIF 1</button>
-              <button class="gif-btn" data-gif="bg2.gif">GIF 2</button>
-              <button class="gif-btn active" data-gif="bg3.gif">GIF 3</button>
-              <button class="gif-btn" data-gif="bg4.gif">GIF 4</button>
-              <button class="gif-btn" data-gif="bg5.gif">GIF 5</button>
-              <button class="gif-btn" data-gif="bg6.gif">GIF 6</button>
-            </div>
-          </div>
-
-          <div class="slider-group">
-            <label for="size-slider">
-              <span>Cell Size</span>
-              <span class="slider-value" id="size-value">20px</span>
-            </label>
-            <input type="range" id="size-slider" min="15" max="40" value="20" class="slider">
-          </div>
-
-          <div class="slider-group">
-            <label for="color-slider">
-              <span>Text Color Spectrum</span>
-              <span class="slider-value" id="color-value">Rainbow</span>
-            </label>
-            <input type="range" id="color-slider" min="0" max="360" value="0" class="slider">
-          </div>
-
-          <div class="slider-group">
-            <label>
-              <span>Wave Pattern</span>
-            </label>
-            <div class="wave-pattern-options">
-              <button class="wave-btn active" data-pattern="radial">Radial</button>
-              <button class="wave-btn" data-pattern="horizontal">Horizontal</button>
-              <button class="wave-btn" data-pattern="vertical">Vertical</button>
-              <button class="wave-btn" data-pattern="sinusoidal">Sinusoidal</button>
-              <button class="wave-btn" data-pattern="random">Random</button>
+          <div class="column-headers" id="column-headers"></div>
+          <div class="row-container">
+            <div class="row-headers" id="row-headers"></div>
+            <div class="video-container">
+              <div class="loading-message">
+                <p class="loading-text">Ready to dissolve into data?</p>
+                <p class="instruction-text">↓ Click Start Camera Below ↓</p>
+              </div>
+              <div class="video-controls-overlay">
+                <button id="record-btn" class="btn-icon" disabled title="Record Video">
+                  <span class="icon-label">REC</span>
+                </button>
+                <button id="download-btn" class="btn-icon" disabled title="Save Photo">
+                  <span class="icon-label">SAVE</span>
+                </button>
+              </div>
+              <video id="video" autoplay playsinline></video>
+              <canvas id="segmentation-canvas"></canvas>
+              <canvas id="grid-canvas"></canvas>
+              <canvas id="cell-canvas"></canvas>
+              <canvas id="text-canvas"></canvas>
+              <img id="cell-bg-gif" style="display: none;" />
             </div>
           </div>
         </div>
+        <div class="controls">
+          <div class="button-group">
+            <button id="start-btn" class="btn-primary">Start Camera</button>
+            <button id="fullscreen-btn" class="btn-secondary" disabled>Fullscreen</button>
+          </div>
 
-        <div class="input-group">
-          <label for="text-input" class="input-label">What characters made you?</label>
-          <input type="text" id="text-input" class="text-input"
-            placeholder="Enter your characters..." maxlength="50" />
-          <button id="clear-text-btn" class="btn-secondary">Clear</button>
+          <div class="control-panel">
+            <div class="slider-group" style="display: none;">
+              <label>
+                <span>Cell Background</span>
+              </label>
+              <div class="background-options">
+                <button class="bg-btn" data-bg="color">Color</button>
+                <button class="bg-btn active" data-bg="gif">GIF</button>
+              </div>
+            </div>
+
+            <div class="slider-group" id="color-picker-group" style="display: none;">
+              <label for="bg-color-picker">
+                <span>Background Color</span>
+                <span class="slider-value" id="bg-color-value">#FFFFFF</span>
+              </label>
+              <input type="color" id="bg-color-picker" value="#FFFFFF" class="color-picker">
+            </div>
+
+            <div class="slider-group" id="gif-selector-group" style="display: none;">
+              <label>
+                <span>Select GIF Background</span>
+              </label>
+              <div class="gif-options">
+                <button class="gif-btn" data-gif="bg1.gif">GIF 1</button>
+                <button class="gif-btn" data-gif="bg2.gif">GIF 2</button>
+                <button class="gif-btn" data-gif="bg3.gif">GIF 3</button>
+                <button class="gif-btn" data-gif="bg4.gif">GIF 4</button>
+                <button class="gif-btn active" data-gif="bg5.gif">GIF 5</button>
+                <button class="gif-btn" data-gif="bg6.gif">GIF 6</button>
+              </div>
+            </div>
+
+            <div class="slider-group">
+              <label for="size-slider">
+                <span>Cell Size</span>
+                <span class="slider-value" id="size-value">20px</span>
+              </label>
+              <input type="range" id="size-slider" min="15" max="40" value="20" class="slider">
+            </div>
+
+            <div class="slider-group">
+              <label for="color-slider">
+                <span>Text Color Spectrum</span>
+                <span class="slider-value" id="color-value">Rainbow</span>
+              </label>
+              <input type="range" id="color-slider" min="0" max="360" value="0" class="slider">
+            </div>
+
+            <div class="slider-group">
+              <label>
+                <span>Wave Pattern</span>
+              </label>
+              <div class="wave-pattern-options">
+                <button class="wave-btn active" data-pattern="radial">Radial</button>
+                <button class="wave-btn" data-pattern="horizontal">Horizontal</button>
+                <button class="wave-btn" data-pattern="vertical">Vertical</button>
+                <button class="wave-btn" data-pattern="sinusoidal">Sinusoidal</button>
+                <button class="wave-btn" data-pattern="random">Random</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="text-input" class="input-label">What characters made you?</label>
+            <input type="text" id="text-input" class="text-input" placeholder="Enter your characters..."
+              maxlength="50" />
+            <button id="clear-text-btn" class="btn-secondary">Clear</button>
+          </div>
+          <div class="recording-timer" id="recording-timer" style="display: none;">
+            <span class="timer-dot">⏺</span>
+            <span id="timer-display">00:00</span>
+          </div>
+          <div class="status" id="status" style="display: none;">Click to begin</div>
         </div>
-        <div class="recording-timer" id="recording-timer" style="display: none;">
-          <span class="timer-dot">⏺</span>
-          <span id="timer-display">00:00</span>
-        </div>
-        <div class="status" id="status" style="display: none;">Click to begin</div>
-      </div>
       </div>
     </div>
   </div>
