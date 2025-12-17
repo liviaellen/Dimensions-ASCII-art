@@ -206,7 +206,8 @@ body::before {
 }
 
 .column-header {
-  min-width: 20px;
+  width: 40px;
+  flex-shrink: 0;
   padding: 8px 4px;
   text-align: center;
   font-size: 12px;
@@ -235,8 +236,9 @@ body::before {
 }
 
 .row-header {
-  min-height: 20px;
-  min-width: 40px;
+  height: 40px;
+  width: 50px;
+  flex-shrink: 0;
   padding: 4px 8px;
   display: flex;
   align-items: center;
@@ -250,7 +252,9 @@ body::before {
 
 .video-container {
   position: relative;
-  flex: 1;
+  width: 100%;
+  max-width: 800px;
+  height: auto;
   border-radius: 0;
   overflow: hidden;
   background: #000;

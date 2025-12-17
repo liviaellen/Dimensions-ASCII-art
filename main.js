@@ -241,7 +241,6 @@ class NumberTwinApp {
       const header = document.createElement('div');
       header.className = 'column-header';
       header.textContent = this.getColumnLabel(i);
-      header.style.minWidth = CELL_SIZE + 'px';
       this.columnHeaders.appendChild(header);
     }
 
@@ -251,7 +250,6 @@ class NumberTwinApp {
       const header = document.createElement('div');
       header.className = 'row-header';
       header.textContent = i + 1;
-      header.style.minHeight = CELL_SIZE + 'px';
       this.rowHeaders.appendChild(header);
     }
   }
