@@ -42,7 +42,7 @@ body::before {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: url('/backgrounds/bg3.gif');
+  background-image: url('/backgrounds/bg4.gif');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -313,10 +313,10 @@ body::before {
   margin: 0;
   padding: 0;
   border-radius: 0;
-  overflow: hidden;
+  overflow: visible;
   background: #000;
-  max-width: 100%;
-  max-height: 100%;
+  width: 100%;
+  height: 100%;
 }
 
 .video-controls-overlay {
@@ -330,10 +330,14 @@ body::before {
 
 .loading-message {
   position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   z-index: 10;
   text-align: center;
   color: #00ff00;
   font-family: 'VT323', monospace;
+  width: 100%;
 }
 
 .loading-text {
@@ -573,6 +577,46 @@ body::before {
 }
 
 .wave-btn.active {
+  color: #000000;
+  background: #00ff00;
+  border-color: #00ff00;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
+}
+
+.background-options,
+.gif-options {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.bg-btn,
+.gif-btn {
+  flex: 1;
+  min-width: 60px;
+  padding: 0.5rem 0.5rem;
+  font-size: 0.625rem;
+  font-weight: 400;
+  color: #00ff00;
+  background: transparent;
+  border: 1px solid #00ff00;
+  border-radius: 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  text-transform: uppercase;
+  font-family: 'VT323', monospace;
+}
+
+.bg-btn:hover,
+.gif-btn:hover {
+  background: rgba(0, 255, 0, 0.1);
+  border-color: #00ffff;
+  box-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+}
+
+.bg-btn.active,
+.gif-btn.active {
   color: #000000;
   background: #00ff00;
   border-color: #00ff00;
