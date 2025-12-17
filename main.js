@@ -215,9 +215,11 @@ class NumberTwinApp {
     const width = this.video.videoWidth;
     const height = this.video.videoHeight;
 
-    // Set container aspect ratio to match camera
-    const aspectRatio = width / height;
-    this.videoContainer.style.aspectRatio = `${width} / ${height}`;
+    // Set container to exact camera dimensions
+    this.videoContainer.style.width = `${width}px`;
+    this.videoContainer.style.height = `${height}px`;
+    this.videoContainer.style.maxWidth = '100%';
+    this.videoContainer.style.maxHeight = '100%';
 
     this.segmentationCanvas.width = width;
     this.segmentationCanvas.height = height;
