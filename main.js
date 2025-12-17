@@ -94,7 +94,7 @@ class NumberTwinApp {
   }
 
   setupEventListeners() {
-    this.startBtn.addEventListener('click', () => this.start());
+    this.startBtn.addEventListener('click', () => this.toggleCamera());
 
     this.textInput.addEventListener('input', (e) => {
       this.userText = e.target.value.toUpperCase();
@@ -114,6 +114,8 @@ class NumberTwinApp {
     this.sizeSlider.addEventListener('input', (e) => {
       CELL_SIZE = parseInt(e.target.value);
       this.sizeValue.textContent = CELL_SIZE + 'px';
+      // Update CSS variable for header sizes
+      document.documentElement.style.setProperty('--cell-size', `${CELL_SIZE}px`);
       this.needsHeaderUpdate = true;
     });
 
@@ -177,10 +179,38 @@ class NumberTwinApp {
     });
   }
 
+  toggleCamera() {
+    if (!this.isRunning) {
+      this.start();
+    } else {
+      this.stop();
+    }
+  }
+
+  stop() {
+    this.isRunning = false;
+
+    // Stop video stream
+    if (this.video.srcObject) {
+      this.video.srcObject.getTracks().forEach(track => track.stop());
+      this.video.srcObject = null;
+    }
+
+    // Reset UI
+    this.startBtn.textContent = 'Start Camera';
+    this.startBtn.disabled = false;
+    this.fullscreenBtn.disabled = true;
+    this.recordBtn.disabled = true;
+    this.downloadBtn.disabled = true;
+    this.loadingMessage.classList.remove('hidden');
+    this.updateStatus('Camera stopped', 'active');
+  }
+
   async start() {
     try {
       console.log('[DEBUG] Starting camera...');
       this.startBtn.disabled = true;
+      this.startBtn.textContent = 'Stop Camera';
       this.updateStatus('Requesting camera access...', 'active');
 
       // Get camera stream
@@ -211,13 +241,14 @@ class NumberTwinApp {
       await this.initSegmentation();
       console.log('[DEBUG] Segmentation initialized');
 
-      this.updateStatus('Camera active - Segmentation running', 'active');
+      this.updateStatus('Camera active', 'active');
       this.isRunning = true;
 
       // Hide loading message
       this.loadingMessage.classList.add('hidden');
 
       // Enable buttons
+      this.startBtn.disabled = false;
       this.fullscreenBtn.disabled = false;
       this.recordBtn.disabled = false;
       this.downloadBtn.disabled = false;
@@ -244,30 +275,27 @@ class NumberTwinApp {
   }
 
   setupCanvases() {
-    const videoWidth = this.video.videoWidth;
-    const videoHeight = this.video.videoHeight;
+    const width = this.video.videoWidth;
+    const height = this.video.videoHeight;
 
-    // Set canvases to video dimensions
-    this.segmentationCanvas.width = videoWidth;
-    this.segmentationCanvas.height = videoHeight;
+    // Set container to camera dimensions with scaling
+    this.videoContainer.style.width = `${width}px`;
+    this.videoContainer.style.height = `${height}px`;
 
-    this.gridCanvas.width = videoWidth;
-    this.gridCanvas.height = videoHeight;
+    // Set CSS variable for cell size
+    document.documentElement.style.setProperty('--cell-size', `${CELL_SIZE}px`);
 
-    this.cellCanvas.width = videoWidth;
-    this.cellCanvas.height = videoHeight;
+    this.segmentationCanvas.width = width;
+    this.segmentationCanvas.height = height;
 
-    this.textCanvas.width = videoWidth;
-    this.textCanvas.height = videoHeight;
+    this.gridCanvas.width = width;
+    this.gridCanvas.height = height;
 
-    // Keep container size consistent - scale to fit
-    const containerMaxHeight = 600; // Max height for the container
-    const aspectRatio = videoWidth / videoHeight;
-    const scaledHeight = Math.min(containerMaxHeight, videoHeight);
-    const scaledWidth = scaledHeight * aspectRatio;
+    this.cellCanvas.width = width;
+    this.cellCanvas.height = height;
 
-    this.videoContainer.style.width = `${scaledWidth}px`;
-    this.videoContainer.style.height = `${scaledHeight}px`;
+    this.textCanvas.width = width;
+    this.textCanvas.height = height;
 
     // Draw grid lines
     this.drawGrid();
@@ -416,7 +444,7 @@ class NumberTwinApp {
       this.currentPaletteIndex = (this.currentPaletteIndex + 1) % COLOR_PALETTES.length;
     }
 
-    this.drawCells();
+    // Always use ASCII art mode (uses default A..Z if no user text)
     this.drawTextArt();
 
     requestAnimationFrame(() => this.animate());
@@ -696,27 +724,25 @@ class NumberTwinApp {
             }
           }
 
-          // Draw cell background with colored spectrum (only if NOT in GIF mode)
-          if (this.cellBgMode !== 'gif') {
-            // Draw colored cell background with spectrum
-            if (SPECTRUM_OFFSET === 0) {
-              // Rainbow mode - full spectrum across face with rotation speed based on WAVE_SPEED
-              const timeOffset = (this.time * (WAVE_SPEED * 666)) % 360; // Speed controlled by slider
-              const hue = ((col / cols) * 360 + timeOffset) % 360;
-              const finalL = Math.min(70, 30 + contrastEnhanced * 40); // Darker for better text contrast
-              const finalS = 85;
-              ctx.fillStyle = `hsl(${hue}, ${finalS}%, ${finalL}%)`;
-            } else {
-              // Spectrum mode - use offset as starting hue
-              const hue = (SPECTRUM_OFFSET + (col / cols) * 120) % 360; // 120° range
-              const finalL = Math.min(70, 30 + contrastEnhanced * 40);
-              const finalS = 85;
-              ctx.fillStyle = `hsl(${hue}, ${finalS}%, ${finalL}%)`;
-            }
-
-            // Draw colored cell background
-            ctx.fillRect(x + 1, y + 1, CELL_SIZE - 2, CELL_SIZE - 2);
+          // Draw cell background with spectrum colors
+          // The spectrum colors show on cells regardless of background mode
+          if (SPECTRUM_OFFSET === 0) {
+            // Rainbow mode - full spectrum across face with rotation speed based on WAVE_SPEED
+            const timeOffset = (this.time * (WAVE_SPEED * 666)) % 360; // Speed controlled by slider
+            const hue = ((col / cols) * 360 + timeOffset) % 360;
+            const finalL = Math.min(70, 30 + contrastEnhanced * 40); // Darker for better text contrast
+            const finalS = 85;
+            ctx.fillStyle = `hsl(${hue}, ${finalS}%, ${finalL}%)`;
+          } else {
+            // Spectrum mode - use offset as starting hue
+            const hue = (SPECTRUM_OFFSET + (col / cols) * 120) % 360; // 120° range
+            const finalL = Math.min(70, 30 + contrastEnhanced * 40);
+            const finalS = 85;
+            ctx.fillStyle = `hsl(${hue}, ${finalS}%, ${finalL}%)`;
           }
+
+          // Draw colored cell background
+          ctx.fillRect(x + 1, y + 1, CELL_SIZE - 2, CELL_SIZE - 2);
 
           // Draw text in contrasting color (white or black based on brightness)
           const textColor = contrastEnhanced > 0.5 ? '#000000' : '#FFFFFF';
@@ -942,7 +968,13 @@ class NumberTwinApp {
 
   loadCellBgGif(gifFile) {
     this.cellBgGifImg.src = `/backgrounds/${gifFile}`;
-    console.log('Cell background GIF loaded:', gifFile);
+    this.cellBgGifImg.onload = () => {
+      console.log('Cell background GIF loaded successfully:', gifFile);
+      console.log('GIF dimensions:', this.cellBgGifImg.naturalWidth, 'x', this.cellBgGifImg.naturalHeight);
+    };
+    this.cellBgGifImg.onerror = () => {
+      console.error('Failed to load GIF:', gifFile);
+    };
   }
 }
 
