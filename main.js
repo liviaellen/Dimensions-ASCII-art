@@ -67,7 +67,7 @@ class NumberTwinApp {
     this.colorPickerGroup = document.getElementById('color-picker-group');
     this.gifSelectorGroup = document.getElementById('gif-selector-group');
     this.cellBgMode = 'gif'; // 'color' or 'gif'
-    this.cellBgGifFile = 'bg5.gif'; // Default GIF
+    this.cellBgGifFile = 'bg4.gif'; // Default GIF
 
     this.segmentationCtx = this.segmentationCanvas.getContext('2d', { willReadFrequently: true });
     this.gridCtx = this.gridCanvas.getContext('2d');
@@ -799,16 +799,20 @@ class NumberTwinApp {
 
   drawWatermark() {
     const ctx = this.cellCtx;
-    const text = 'DIMENSIONS BY LIVIA ELLEN';
+    const text1 = 'DIMENSIONS BY LIVIA ELLEN';
+    const text2 = '@ellen_in_sf';
     const padding = 12;
     const fontSize = 10;
+    const lineSpacing = 4;
 
     ctx.font = `${fontSize}px 'Press Start 2P', monospace`;
-    const textWidth = ctx.measureText(text).width;
+    const text1Width = ctx.measureText(text1).width;
+    const text2Width = ctx.measureText(text2).width;
+    const maxTextWidth = Math.max(text1Width, text2Width);
 
     // Position box in bottom-right corner
-    const boxWidth = textWidth + padding * 2;
-    const boxHeight = fontSize + padding * 2;
+    const boxWidth = maxTextWidth + padding * 2;
+    const boxHeight = (fontSize * 2) + lineSpacing + (padding * 2);
     const x = this.cellCanvas.width - boxWidth - 10;
     const y = this.cellCanvas.height - boxHeight - 10;
 
@@ -834,7 +838,15 @@ class NumberTwinApp {
     ctx.fillStyle = '#00ff00';
     ctx.shadowColor = '#00ff00';
     ctx.shadowBlur = 8;
-    ctx.fillText(text, x + boxWidth / 2, y + boxHeight / 2);
+
+    // First line
+    const text1Y = y + padding + fontSize / 2;
+    ctx.fillText(text1, x + boxWidth / 2, text1Y);
+
+    // Second line (Instagram handle)
+    const text2Y = text1Y + fontSize + lineSpacing;
+    ctx.fillText(text2, x + boxWidth / 2, text2Y);
+
     ctx.shadowBlur = 0;
   }
 
@@ -969,12 +981,12 @@ class NumberTwinApp {
   }
 
   loadCellBgGif(gifFile) {
-    this.cellBgGifImg.src = `/backgrounds/${gifFile}`;
+    this.cellBgGifImg.src = `/Dimensions-ASCII-art/backgrounds/${gifFile}`;
 
     // Also update the site main background
     const mainBg = document.getElementById('main-bg');
     if (mainBg) {
-      mainBg.style.backgroundImage = `url('/backgrounds/${gifFile}')`;
+      mainBg.style.backgroundImage = `url('/Dimensions-ASCII-art/backgrounds/${gifFile}')`;
     }
 
     this.cellBgGifImg.onload = () => {
