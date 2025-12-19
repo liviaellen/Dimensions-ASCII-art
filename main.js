@@ -501,13 +501,9 @@ class NumberTwinApp {
     const width = this.cellCanvas.width;
     const height = this.cellCanvas.height;
 
-    // Draw background - either one big GIF stretched across canvas or solid color
-    if (this.cellBgMode === 'gif' && this.cellBgGifImg.complete && this.cellBgGifImg.naturalWidth > 0) {
-      ctx.drawImage(this.cellBgGifImg, 0, 0, width, height);
-    } else {
-      ctx.fillStyle = BG_COLOR;
-      ctx.fillRect(0, 0, width, height);
-    }
+    // Draw canvas background using color picker value
+    ctx.fillStyle = BG_COLOR;
+    ctx.fillRect(0, 0, width, height);
 
     if (!this.segmentationMask) return;
 
@@ -628,13 +624,9 @@ class NumberTwinApp {
     const width = this.cellCanvas.width;
     const height = this.cellCanvas.height;
 
-    // Draw background - either one big GIF stretched across canvas or solid color
-    if (this.cellBgMode === 'gif' && this.cellBgGifImg.complete && this.cellBgGifImg.naturalWidth > 0) {
-      ctx.drawImage(this.cellBgGifImg, 0, 0, width, height);
-    } else {
-      ctx.fillStyle = BG_COLOR;
-      ctx.fillRect(0, 0, width, height);
-    }
+    // Draw canvas background using color picker value
+    ctx.fillStyle = BG_COLOR;
+    ctx.fillRect(0, 0, width, height);
 
     const cols = Math.ceil(width / CELL_SIZE);
     const rows = Math.ceil(height / CELL_SIZE);
@@ -981,12 +973,25 @@ class NumberTwinApp {
   }
 
   loadCellBgGif(gifFile) {
+    // Handle black background option
+    if (gifFile === 'black') {
+      this.cellBgGifFile = 'black';
+      this.cellBgGifImg.src = '';
+      const mainBg = document.getElementById('main-bg');
+      if (mainBg) {
+        mainBg.style.backgroundImage = 'none';
+        mainBg.style.backgroundColor = '#000000';
+      }
+      return;
+    }
+
     this.cellBgGifImg.src = `/Dimensions-ASCII-art/backgrounds/${gifFile}`;
 
     // Also update the site main background
     const mainBg = document.getElementById('main-bg');
     if (mainBg) {
       mainBg.style.backgroundImage = `url('/Dimensions-ASCII-art/backgrounds/${gifFile}')`;
+      mainBg.style.backgroundColor = '';
     }
 
     this.cellBgGifImg.onload = () => {

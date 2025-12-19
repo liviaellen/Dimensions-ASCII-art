@@ -53,7 +53,7 @@
               <canvas id="grid-canvas"></canvas>
               <canvas id="cell-canvas"></canvas>
               <canvas id="text-canvas"></canvas>
-              <img id="cell-bg-gif" style="display: none;" />
+              <img id="cell-bg-gif" style="position: absolute; top: 0; left: 0; width: 1px; height: 1px; opacity: 0; pointer-events: none;" />
             </div>
           </div>
         </div>
@@ -74,9 +74,9 @@
               </div>
             </div>
 
-            <div class="slider-group" id="color-picker-group" style="display: none;">
+            <div class="slider-group" id="color-picker-group">
               <label for="bg-color-picker">
-                <span>Background Color</span>
+                <span>Canvas Background Color</span>
                 <span class="slider-value" id="bg-color-value">#FFFFFF</span>
               </label>
               <input type="color" id="bg-color-picker" value="#FFFFFF" class="color-picker">
@@ -84,9 +84,10 @@
 
             <div class="slider-group" id="gif-selector-group" style="display: flex;">
               <label>
-                <span>Select GIF Background</span>
+                <span>Main Page Background</span>
               </label>
               <div class="gif-options">
+                <button class="gif-btn" data-gif="black">Black</button>
                 <button class="gif-btn" data-gif="bg1.gif">GIF 1</button>
                 <button class="gif-btn" data-gif="bg2.gif">GIF 2</button>
                 <button class="gif-btn" data-gif="bg3.gif">GIF 3</button>
